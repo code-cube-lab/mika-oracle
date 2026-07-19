@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b0708">
+    <title>Таро-кабинет - игра раскладов и личный разбор</title>
+    <meta name="description" content="Персональный Таро-кабинет: укажите имя и дату рождения, получите карту-послание на сегодня и соберите интерактивный расклад.">
+    <link rel="stylesheet" href="styles.css?v=20260715-paid-demo">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">К содержанию</a>
+
+    <header class="site-header" data-header>
+      <a class="brand" href="index.html#game" aria-label="Закрытый таро-кабинет, на главную">
+        <span class="brand-mark">TC</span>
+        <span>
+          <strong>Таро-кабинет</strong>
+          <small>таролог</small>
+        </span>
+      </a>
+      <nav class="main-nav" aria-label="Основная навигация">
+        <a href="index.html#game">Игра</a>
+        <a href="#paid-access">Мой доступ</a>
+        <a href="about.html">Кто я</a>
+        <a href="tariffs.html">Тарифы</a>
+        <a href="process.html">Как получить ответ</a>
+      </nav>
+      <button class="button button-ghost js-open-lead" data-plan="Бизнес">Открыть связку</button>
+    </header>
+
+    <main id="main">
+      <section class="game-section" id="game">
+        <h1 class="visually-hidden">Персональный расклад Таро</h1>
+        <div class="game-visual" aria-hidden="true"></div>
+        <div class="game-content">
+          <div class="tarot-board" aria-label="Интерактивный расклад Таро">
+            <div class="draw-panel">
+              <div>
+                <p class="result-kicker">Ваш расклад</p>
+                <strong id="drawMeta">Выберите одну из семи карт</strong>
+              </div>
+              <div class="draw-panel-actions">
+                <div class="draw-progress" id="drawProgress" aria-label="Открыто 0 из 4 карт">
+                  <span class="is-current"></span><span></span><span></span><span></span>
+                </div>
+                <button class="button button-soft" type="button" id="reshuffleButton">Сбросить</button>
+              </div>
+            </div>
+            <div class="personal-inputs">
+              <label class="money-question">
+                <span>Как к вам обращаться</span>
+                <input id="clientNameInput" type="text" autocomplete="name" inputmode="text" autocapitalize="words" placeholder="Например: Анна">
+              </label>
+              <label class="money-question">
+                <span>Дата рождения</span>
+                <input id="birthDateInput" type="date" autocomplete="bday" min="1900-01-01" aria-describedby="zodiacBadge">
+              </label>
+              <div class="profile-sign" id="zodiacBadge" aria-live="polite">
+                <span>Ваш знак</span>
+                <strong>Определится по дате</strong>
+              </div>
+              <label class="money-question personal-question-field">
+                <span>Острый денежный вопрос</span>
+                <input id="moneyQuestionInput" type="text" autocomplete="off" placeholder="Например: почему доход стоит и где я теряю деньги?">
+              </label>
+            </div>
+            <div class="zodiac-profile" id="zodiacProfile" aria-live="polite">
+              <p class="result-kicker">Карта-послание на сегодня</p>
+              <h3>Введите имя и дату рождения</h3>
+              <p>Кабинет определит знак и откроет личную карту-крючок: одну фразу, один вопрос в душу и один бережный шаг на сегодня.</p>
+            </div>
+            <div class="draw-stage" id="drawStage" aria-hidden="true">
+              <div class="stage-light"></div>
+              <div class="stage-card stage-card-a"><span>I</span></div>
+              <div class="stage-card stage-card-b"><span>VI</span></div>
+              <div class="stage-card stage-card-c"><span>XI</span></div>
+              <p id="stageText">Колода слушает вопрос</p>
+            </div>
+            <div class="cards-row" role="list" aria-label="Карты для выбора">
+              <button class="tarot-card" type="button" data-card-slot="0" aria-label="Выбрать первую карту"><span></span><em></em></button>
+              <button class="tarot-card" type="button" data-card-slot="1" aria-label="Выбрать вторую карту"><span></span><em></em></button>
+              <button class="tarot-card" type="button" data-card-slot="2" aria-label="Выбрать третью карту"><span></span><em></em></button>
+              <button class="tarot-card" type="button" data-card-slot="3" aria-label="Выбрать четвертую карту"><span></span><em></em></button>
+              <button class="tarot-card" type="button" data-card-slot="4" aria-label="Выбрать пятую карту"><span></span><em></em></button>
+              <button class="tarot-card" type="button" data-card-slot="5" aria-label="Выбрать шестую карту"><span></span><em></em></button>
+              <button class="tarot-card" type="button" data-card-slot="6" aria-label="Выбрать седьмую карту"><span></span><em></em></button>
+            </div>
+            <p class="tap-hint">Нажмите на карту. Каждая следующая продолжит уже выпавшую связку.</p>
+            <p class="reflection-note">Карты помогают посмотреть на ситуацию под другим углом, но не устанавливают факты и не заменяют профессиональный совет.</p>
+            <div class="reading-result" id="readingResult" aria-live="polite">
+              <p class="result-kicker">Перед вами семь закрытых карт</p>
+              <h3>Выберите ту, к которой потянулась рука</h3>
+              <p>Первое значение откроется сразу. Затем карты начнут складываться в одну линию.</p>
+            </div>
+            <div class="unfold-panel" id="unfoldPanel" aria-live="polite">
+              <p class="result-kicker">Лента расклада</p>
+              <h3>Здесь будет разворачиваться ваша цепочка</h3>
+              <p>Каждая карта добавит новый фрагмент и связь с предыдущей. Полная персональная расшифровка доступна отдельно.</p>
+            </div>
+            <div class="daily-mail-card">
+              <div>
+                <p class="result-kicker">Ежедневное послание</p>
+                <h3>Новая карта каждое утро</h3>
+                <p>На сайте карта обновится автоматически. Email и согласие попадут в заявку на подключение ежедневной доставки.</p>
+              </div>
+              <label class="money-question">
+                <span>Email</span>
+                <input id="dailyEmailInput" type="email" autocomplete="email" placeholder="name@example.com">
+              </label>
+              <div class="daily-mail-actions">
+                <label class="checkbox-row daily-mail-consent">
+                  <input id="dailyMailConsent" type="checkbox">
+                  <span>Хочу получать ежедневную карту-послание. Отписаться можно в любой момент.</span>
+                </label>
+                <button class="button button-soft" type="button" id="dailySaveButton">Сохранить выбор</button>
+                <p class="daily-mail-status" id="dailyMailStatus" aria-live="polite"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section paid-access-section" id="paid-access">
+        <div class="paid-access-heading">
+          <div>
+            <p class="eyebrow">Личный доступ</p>
+            <h2>Платный кабинет после оплаты в Telegram</h2>
+            <p>После подтверждения оплаты клиент вводит персональный код и открывает полный расклад на этом устройстве.</p>
+          </div>
+          <span class="access-badge" id="accessBadge">Бесплатный доступ</span>
+        </div>
+
+        <div class="access-activation" id="accessActivation">
+          <div>
+            <h3>Уже оплатили?</h3>
+            <p>Получите код у мастера в Telegram и введите его ниже. Для первой проверки владелец сайта использует тестовый код.</p>
+          </div>
+          <form class="access-code-form" id="accessCodeForm">
+            <label for="accessCodeInput">Код доступа</label>
+            <div>
+              <input id="accessCodeInput" type="text" autocomplete="one-time-code" placeholder="Например: TARO-XXXX-XXXX">
+              <button class="button button-primary" type="submit">Открыть кабинет</button>
+            </div>
+            <p class="access-status" id="accessStatus" aria-live="polite"></p>
+          </form>
+        </div>
+
+        <div class="paid-cabinet" id="paidCabinet" hidden>
+          <div class="paid-cabinet-hero">
+            <div>
+              <p class="result-kicker">Доступ подтверждён</p>
+              <h3 id="paidWelcome">Ваш платный кабинет открыт</h3>
+              <p>Доступно семь карт, полные фрагменты связки и персональный план на 7 дней.</p>
+            </div>
+            <button class="button button-soft" type="button" id="resetPaidAccess">Сбросить тестовый доступ</button>
+          </div>
+          <div class="paid-feature-grid">
+            <article>
+              <span>01</span>
+              <strong>Полная связка</strong>
+              <p>Закрытые причины, риск и действие раскрываются прямо в ленте расклада.</p>
+            </article>
+            <article>
+              <span>02</span>
+              <strong>Семь карт</strong>
+              <p>После четырёх бесплатных карт можно продолжить расклад до полной линии.</p>
+            </article>
+            <article>
+              <span>03</span>
+              <strong>План на 7 дней</strong>
+              <p>Кабинет собирает бережные действия из вопроса, знака и выпавших карт.</p>
+            </article>
+          </div>
+          <div class="paid-personal-result" id="paidPersonalResult"></div>
+          <a class="button button-primary" href="#game">Продолжить полный расклад</a>
+        </div>
+      </section>
+
+      <section class="section assistant-section" id="assistant">
+        <div class="assistant-copy">
+          <p class="eyebrow">Подготовка вопроса</p>
+          <h2>Проводник кабинета помогает сформулировать запрос и выбрать формат</h2>
+          <p>
+            Проводник уточняет запрос, подбирает формат, собирает вводные и напоминает о плане после консультации. Личный смысл расклада в премиум-уровне разбирается на созвоне.
+          </p>
+          <button class="button button-soft js-open-lead" data-plan="Премиум">Получить сопровождение</button>
+        </div>
+
+        <div class="chat-shell" aria-label="Демо помощника кабинета">
+          <div class="chat-header">
+            <span class="status-dot"></span>
+            <div>
+              <strong>Проводник кабинета</strong>
+              <small>демо-диалог на сайте</small>
+            </div>
+          </div>
+          <div class="chat-log" id="chatLog">
+            <p class="chat-message bot">Помогу выбрать формат: деньги, отношения, работа или сложный выбор?</p>
+          </div>
+          <div class="quick-prompts" aria-label="Быстрые вопросы">
+            <button type="button" data-prompt="деньги">Деньги</button>
+            <button type="button" data-prompt="отношения">Отношения</button>
+            <button type="button" data-prompt="созвон">Созвон</button>
+          </div>
+          <form class="chat-form" id="chatForm">
+            <input id="chatInput" name="message" type="text" autocomplete="off" placeholder="Напишите ваш вопрос">
+            <button type="submit">Спросить</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="call-band" id="call">
+        <img src="assets/images/scene-call.png" alt="Онлайн-консультация Таро со свечами, картами и мягким светом экрана">
+        <div>
+          <p class="eyebrow">Созвон</p>
+          <h2>Когда нужен не короткий ответ, а присутствие рядом</h2>
+          <p>
+            Премиум-формат подходит, если вопрос связан с деньгами, отношениями, важным выбором или повторяющимся сценарием. Вы приходите на встречу с одним главным запросом, а после получаете резюме и сопровождение.
+          </p>
+          <button class="button button-primary js-open-lead" data-plan="Премиум">Забронировать созвон</button>
+        </div>
+      </section>
+
+      <section class="section request-section">
+        <div class="section-heading">
+          <p class="eyebrow">Запросы</p>
+          <h2>С чем приходят на расклад</h2>
+        </div>
+        <div class="request-grid">
+          <article>
+            <h3>Деньги</h3>
+            <p>Почему доход стоит, где теряется ресурс, какой шаг поможет вернуть движение.</p>
+          </article>
+          <article>
+            <h3>Отношения</h3>
+            <p>Что человек чувствует, где иллюзия, где честный контакт и какой разговор нужен.</p>
+          </article>
+          <article>
+            <h3>Работа</h3>
+            <p>Оставаться, менять направление, просить повышение, запускать проект или ждать.</p>
+          </article>
+          <article>
+            <h3>Выбор</h3>
+            <p>Два сценария, скрытые риски, вероятный итог и решение, которое не забирает силу.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section offer-section" id="offer">
+        <div class="section-heading">
+          <p class="eyebrow">Оферта и регистрация</p>
+          <h2>Перед оплатой все условия видны заранее</h2>
+        </div>
+        <div class="offer-grid">
+          <article>
+            <h3>Что вы покупаете</h3>
+            <p>Информационно-консультационную эзотерическую услугу: текстовый ответ, аудио, расклад, созвон или сопровождение согласно выбранному тарифу.</p>
+          </article>
+          <article>
+            <h3>Что важно понимать</h3>
+            <p>Таро не заменяет врача, юриста, психолога, финансового советника или вашу личную ответственность. Гарантированный результат не обещается.</p>
+          </article>
+          <article>
+            <h3>Регистрация</h3>
+            <p>Для заявки нужны имя, дата рождения, контакт, тема вопроса, тариф и согласие с офертой. Дата определяет знак и ежедневную карту.</p>
+          </article>
+          <article>
+            <h3>Возврат и перенос</h3>
+            <p>До начала оказания услуги можно перенести время. Условия возврата и реквизиты владельца добавляются в финальную юридическую версию оферты.</p>
+          </article>
+        </div>
+        <button class="button button-primary js-open-lead" data-plan="Бизнес">Зарегистрироваться</button>
+      </section>
+
+      <section class="section communication-section" id="communication">
+        <div class="section-heading">
+          <p class="eyebrow">Как общаться</p>
+          <h2>Пример диалога после оплаты</h2>
+          <p>Смысл коммуникации - быстро довести клиента до одного точного вопроса и выбранного формата, без лишней воды.</p>
+        </div>
+        <div class="dialogue">
+          <p><strong>Клиент:</strong> Я оплатил Бизнес. Хочу понять, почему деньги как будто приходят и сразу уходят.</p>
+          <p><strong>Кабинет:</strong> Приняли оплату. Давайте зафиксируем один главный вопрос: “где сейчас основная утечка денег и какой шаг вернет движение?” Если есть контекст - работа, бизнес, отношения с партнером или долги - напишите 3-5 предложений.</p>
+          <p><strong>Клиент:</strong> Я работаю, но постоянно беру мелкие подработки и не расту.</p>
+          <p><strong>Кабинет:</strong> Тогда смотрим три слоя: причина остановки, что забирает ресурс, и действие на ближайшие 7 дней. После расклада вы получите текст и короткое аудио, чтобы было проще вернуться к ответу.</p>
+        </div>
+      </section>
+
+      <section class="section faq-section" id="faq">
+        <div class="section-heading">
+          <p class="eyebrow">FAQ</p>
+          <h2>Коротко о формате</h2>
+        </div>
+        <div class="faq-list">
+          <details>
+            <summary>Можно ли задать срочный вопрос?</summary>
+            <p>Да. Для короткого срочного вопроса подойдет Эконом. Если важен контекст, лучше выбрать Бизнес или Премиум.</p>
+          </details>
+          <details>
+            <summary>Кто разбирает премиум-формат?</summary>
+            <p>Премиум-формат включает личный разбор, созвон, письменное резюме и сопровождение после консультации.</p>
+          </details>
+          <details>
+            <summary>Можно ли созвониться?</summary>
+            <p>Да, созвон включен в Премиум. В заявке выбирается удобный способ связи: Telegram, WhatsApp, Zoom или телефон.</p>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div>
+        <strong>Таро-кабинет</strong>
+        <p>Онлайн-расклады, личные созвоны и сопровождение по структуре консультации.</p>
+        <p class="footer-contact">Telegram: <a href="https://t.me/MicksaJ" target="_blank" rel="noopener">@MicksaJ</a></p>
+      </div>
+      <div class="footer-actions">
+        <button class="button button-soft js-open-lead" data-plan="Эконом">Начать с вопроса</button>
+        <a class="button button-ghost" href="#game">К игре</a>
+      </div>
+    </footer>
+
+    <a class="back-to-top" href="#game" aria-label="Подняться к игре">↑</a>
+
+    <div class="modal" id="leadModal" hidden>
+      <div class="modal-backdrop" data-close-modal></div>
+      <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <button class="modal-close" type="button" data-close-modal aria-label="Закрыть">×</button>
+        <p class="eyebrow">Регистрация</p>
+        <h2 id="modalTitle">Заявка на расклад</h2>
+        <form id="leadForm" class="lead-form">
+          <label>
+            Имя
+            <input name="name" type="text" autocomplete="name" required placeholder="Как к вам обращаться">
+          </label>
+          <label>
+            Дата рождения
+            <input name="birthDate" type="date" autocomplete="bday" min="1900-01-01" required>
+            <small class="lead-zodiac-hint" id="leadZodiacHint">Знак определится автоматически</small>
+          </label>
+          <label>
+            Контакт
+            <input name="contact" type="text" autocomplete="tel" required placeholder="Telegram, WhatsApp или телефон">
+          </label>
+          <label>
+            Email для карты дня
+            <input name="email" type="email" autocomplete="email" placeholder="name@example.com">
+          </label>
+          <label>
+            Тариф
+            <select name="plan" id="planSelect">
+              <option>Эконом</option>
+              <option>Бизнес</option>
+              <option>Премиум</option>
+            </select>
+          </label>
+          <label>
+            Тема вопроса
+            <textarea name="question" rows="4" required placeholder="Например: деньги, отношения, работа, выбор"></textarea>
+          </label>
+          <label class="checkbox-row">
+            <input name="offer" type="checkbox" required>
+            <span>Я принимаю условия оферты и понимаю, что консультация не является медицинской, юридической или финансовой рекомендацией.</span>
+          </label>
+          <label class="checkbox-row">
+            <input name="emailConsent" type="checkbox">
+            <span>Хочу получать ежедневную карту-послание на почту и ссылку для возврата на сайт. Я понимаю, что от рассылки можно отказаться.</span>
+          </label>
+          <button class="button button-primary" type="submit">Подготовить заявку</button>
+        </form>
+        <div class="form-result" id="formResult" hidden></div>
+      </section>
+    </div>
+
+    <script src="script.js?v=20260715-paid-demo"></script>
+  </body>
+</html>
